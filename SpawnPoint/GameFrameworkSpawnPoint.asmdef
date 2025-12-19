@@ -1,0 +1,17 @@
+{
+    "name": "GameFrameworkSpawnPoint",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1d65efb662429984488187d65ee1f1a8",
+        "GUID:c383fce5c91930348b07e7bd63f0f5e9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
