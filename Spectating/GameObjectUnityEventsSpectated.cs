@@ -18,6 +18,7 @@ namespace GameFramework.Spectating
         
         [SerializeField] private UnityEvent? onSpectate;
         [SerializeField] private UnityEvent? onSpectateEnd;
+        [SerializeField] private CameraTransitionSettings transition;
 
         private ICamera _camera = null!;
         
@@ -27,9 +28,10 @@ namespace GameFramework.Spectating
             OnStopSpectating();
         }
         
-        public void OnStartSpectating()
+        public void OnStartSpectating(ISpectateController controller)
         {
             onSpectate?.Invoke();
+            controller.TransitionToCamera(_camera, transition);
         }
 
         public void OnStopSpectating()
