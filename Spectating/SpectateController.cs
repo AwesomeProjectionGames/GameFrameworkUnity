@@ -2,6 +2,7 @@
 
 using AwesomeProjectionCoreUtils.Extensions;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFramework.Spectating
 {
@@ -21,14 +22,19 @@ namespace GameFramework.Spectating
         /// Keep in mind that this instance is not guaranteed to be alive (null + unity lifecycle).
         /// </summary>
         public ISpectate? CurrentSpectate { get; private set; }
+        
+        [SerializeField] private bool isFullScreen = true;
 
         protected override void Awake()
         {
-            if(FullScreen != null)
+            if (isFullScreen)
             {
-                Debug.LogWarning("Multiple SpectateController instances detected. Overriding FullScreen instance.");
+                if(FullScreen != null)
+                {
+                    Debug.LogWarning("Multiple SpectateController instances detected. Overriding FullScreen instance.");
+                }
+                FullScreen = this;
             }
-            FullScreen = this;
             base.Awake();
         }
 
