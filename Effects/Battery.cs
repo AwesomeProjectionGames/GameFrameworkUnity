@@ -1,7 +1,6 @@
 ﻿using System;
-using GameFramework.Effects;
 
-namespace GameFramework.Spectating
+namespace GameFramework.Effects
 {
     /// <summary>
     /// Default implementation of <see cref="IBattery"/>.
