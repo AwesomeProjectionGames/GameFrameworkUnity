@@ -2,7 +2,7 @@
   "name": "com.awesomeprojection.gameframework.communications",
   "displayName": "Communications (Game Framework)",
   "description": "An communication / bus event system implementation and reactivity tools for GameFramework.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "unity": "2021.3",
   "author": {
     "name": "Eliott Jaquier",
