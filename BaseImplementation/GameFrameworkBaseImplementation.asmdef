@@ -1,9 +1,10 @@
 {
-    "name": "GameFrameworkCore",
+    "name": "GameFrameworkBaseImplementation",
     "rootNamespace": "",
     "references": [
         "GUID:c383fce5c91930348b07e7bd63f0f5e9",
         "GUID:1d65efb662429984488187d65ee1f1a8",
+        "GUID:d3a778b600804baea50ac3ca686643e0",
         "Mirror",
         "Unity.Netcode.Runtime"
     ],
