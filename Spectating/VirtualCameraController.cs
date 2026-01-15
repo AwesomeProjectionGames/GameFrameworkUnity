@@ -69,8 +69,8 @@ namespace GameFramework.Spectating
         
         void LerpCameras(ICamera fromCamera, ICamera toCamera, float t)
         {
-            _masterCamera.Position = Vector3.Lerp(fromCamera.Position, toCamera.Position, t);
-            _masterCamera.Rotation = Quaternion.Slerp(fromCamera.Rotation, toCamera.Rotation, t);
+            _masterCamera.Transform.position = Vector3.Lerp(fromCamera.Transform.position, toCamera.Transform.position, t);
+            _masterCamera.Transform.rotation = Quaternion.Slerp(fromCamera.Transform.rotation, toCamera.Transform.rotation, t);
             _masterCamera.FieldOfView = Mathf.Lerp(fromCamera.FieldOfView, toCamera.FieldOfView, t);
             _masterCamera.NearClipPlane = Mathf.Lerp(fromCamera.NearClipPlane, toCamera.NearClipPlane, t);
             _masterCamera.FarClipPlane = Mathf.Lerp(fromCamera.FarClipPlane, toCamera.FarClipPlane, t);
@@ -78,8 +78,8 @@ namespace GameFramework.Spectating
         
         void CopyCamera(ICamera sourceCamera)
         {
-            _masterCamera.Position = sourceCamera.Position;
-            _masterCamera.Rotation = sourceCamera.Rotation;
+            _masterCamera.Transform.position = sourceCamera.Transform.position;
+            _masterCamera.Transform.rotation = sourceCamera.Transform.rotation;
             _masterCamera.FieldOfView = sourceCamera.FieldOfView;
             _masterCamera.NearClipPlane = sourceCamera.NearClipPlane;
             _masterCamera.FarClipPlane = sourceCamera.FarClipPlane;
