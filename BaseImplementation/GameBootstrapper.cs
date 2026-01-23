@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 
 namespace UnityGameFrameworkImplementations.Core
 {
@@ -15,9 +17,30 @@ namespace UnityGameFrameworkImplementations.Core
         public static void InitializeGameFramework()
         {
             if (GameInstance.Instance != null) return;
-            var hostGo = new GameObject("[GameInstance]");
-            var instance = hostGo.AddComponent<GameInstance>();
-            Object.DontDestroyOnLoad(hostGo);
+
+            // 1. Find all types in the assembly that inherit from GameInstance
+            var gameInstanceType = GetAllTypes()
+                .FirstOrDefault(t => typeof(GameInstance).IsAssignableFrom(t) 
+                                     && !t.IsAbstract 
+                                     && t != typeof(GameInstance)); // Prefer subclasses
+
+            // Fallback: If no subclass found, use the base class
+            if (gameInstanceType == null)
+            {
+                gameInstanceType = typeof(GameInstance);
+            }
+
+            Debug.Log($"[Bootstrapper] Auto-initializing GameInstance type: {gameInstanceType.Name}");
+
+            // 2. Create GameObject and add the specific component type found
+            var hostGo = new GameObject($"[{gameInstanceType.Name}]");
+            hostGo.AddComponent(gameInstanceType);
+        }
+
+        private static System.Collections.Generic.IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes());
         }
     }
 #endif
