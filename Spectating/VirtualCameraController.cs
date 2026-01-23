@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections;
+using AwesomeProjectionCoreUtils.Extensions;
 using UnityEngine;
 
 namespace GameFramework.Spectating
@@ -34,7 +35,7 @@ namespace GameFramework.Spectating
 
         private void LateUpdate()
         {
-            if(_isTransitioning || CurrentCamera == null) return;
+            if(_isTransitioning) return;
             CopyCamera(CurrentCamera);
         }
 
@@ -76,8 +77,9 @@ namespace GameFramework.Spectating
             _masterCamera.FarClipPlane = Mathf.Lerp(fromCamera.FarClipPlane, toCamera.FarClipPlane, t);
         }
         
-        void CopyCamera(ICamera sourceCamera)
+        void CopyCamera(ICamera? sourceCamera)
         {
+            if(!sourceCamera.IsAlive()) return;
             _masterCamera.Transform.position = sourceCamera.Transform.position;
             _masterCamera.Transform.rotation = sourceCamera.Transform.rotation;
             _masterCamera.FieldOfView = sourceCamera.FieldOfView;

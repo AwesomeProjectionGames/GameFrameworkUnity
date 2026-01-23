@@ -33,7 +33,7 @@ namespace GameFramework.Spectating
         private void OnActorUnowned(OnActorUnownedEvent evt)
         {
             if (!evt.IsLocalOwner) return;
-            if ((ActorUnityEventsSpectated)evt.Actor.Controller?.SpectateController?.CurrentSpectate == this)
+            if (evt.Actor.Controller?.SpectateController?.CurrentSpectate == this)
             {
                 Debug.LogWarning($"[ActorUnityEventsSpectated] Cannot stop spectating actor {evt.Actor.UUID} because it is currently being spectated.", evt.Actor.Transform);
             }
