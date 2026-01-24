@@ -38,46 +38,13 @@ namespace UnityGameFrameworkImplementations.Communications
                 return;
 
             CurrentValue = value;
-            NotifyObservers(value);
+            Observers.Notify(value);
         }
         
-        private void NotifyObservers(T value)
-        {
-            foreach (var observer in Observers)
-            {
-                observer.OnNext(value);
-            }
-        }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            if (!Observers.Contains(observer))
-            {
-                Observers.Add(observer);
-                // Push the current value to the new subscriber
-                observer.OnNext(CurrentValue);
-            }
-            return new Unsubscriber(Observers, observer);
-        }
-        
-        private class Unsubscriber : IDisposable
-        {
-            private readonly List<IObserver<T>> _observers;
-            private readonly IObserver<T> _observer;
-
-            public Unsubscriber(List<IObserver<T>> observers, IObserver<T> observer)
-            {
-                _observers = observers;
-                _observer = observer;
-            }
-
-            public void Dispose()
-            {
-                if (_observer != null && _observers.Contains(_observer))
-                {
-                    _observers.Remove(_observer);
-                }
-            }
+            return Observers.SubscribeAndNotify(observer, CurrentValue);
         }
     }
 }
