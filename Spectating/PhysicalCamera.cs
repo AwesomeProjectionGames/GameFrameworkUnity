@@ -46,7 +46,13 @@ namespace GameFramework.Spectating
             get => Camera.farClipPlane;
             set => Camera.farClipPlane = value;
         }
-        
+
+        public override Rect Rect
+        {
+            get => Camera.rect;
+            set => Camera.rect = value;
+        }
+
         private Camera Camera => _camera ??= GetComponent<Camera>();
 
         private AudioListener? AudioListener

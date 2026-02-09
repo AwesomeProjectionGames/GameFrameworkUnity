@@ -10,12 +10,12 @@ namespace GameFramework.Spectating
     public class VirtualCamera : AbstractCamera
     {
         public override bool IsActive
-        { 
+        {
             get => _isActive;
             set
             {
                 _isActive = value;
-                OnActiveStateChanged?.Invoke( _isActive);
+                OnActiveStateChanged?.Invoke(_isActive);
             }
         }
 
@@ -36,11 +36,13 @@ namespace GameFramework.Spectating
             get => farClipPlane;
             set => farClipPlane = value;
         }
-        
+
+        public override Rect Rect { get; set; } = new Rect(0, 0, 1, 1);
+
         [SerializeField] private float fieldOfView = 60f;
         [SerializeField] private float nearClipPlane = 0.1f;
         [SerializeField] private float farClipPlane = 1000f;
-        
+
         private bool _isActive = false;
     }
 }

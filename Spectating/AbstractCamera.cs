@@ -14,8 +14,9 @@ namespace GameFramework.Spectating
         public abstract float FieldOfView { get; set; }
         public abstract float NearClipPlane { get; set; }
         public abstract float FarClipPlane { get; set; }
+        public abstract Rect Rect { get; set; }
         public Transform Transform => transform;
-        
+
         [Tooltip("Invoked when the state of the camera changed.")]
         public UnityEvent<bool> OnActiveStateChanged { get; } = new UnityEvent<bool>();
 
