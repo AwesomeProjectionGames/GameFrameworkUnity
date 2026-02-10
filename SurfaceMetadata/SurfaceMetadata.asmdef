@@ -3,7 +3,7 @@
     "rootNamespace": "",
     "references": [
         "GameFramework",
-        "AwesomeProjectionCoreutils",
+        "AwesomeProjectionCoreutils"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
