@@ -15,11 +15,30 @@ namespace GameFramework.Spectating
         public ICamera? CurrentCamera { get; protected set; }
 
         protected ICamera _masterCamera = null!;
-        private bool _isTransitioning = false;
+        private bool _isTransitioning;
+        
+        private Rect _viewPortRect = new Rect(0, 0, 1, 1);
+        
+        public Rect ViewPort { get => _viewPortRect; set => SetViewPort(value); }
+        
+        private void SetViewPort(Rect viewPort)
+        {
+            _viewPortRect = viewPort;
+            if (_masterCamera.IsAlive())
+            {
+                _masterCamera.Rect = _viewPortRect;
+            }
+        }
 
         protected virtual void Awake()
         {
             _masterCamera = GetComponent<ICamera>();
+            if (!_masterCamera.IsAlive())
+            {
+                Debug.LogError("No ICamera component found on the GameObject. Please add one to use VirtualCameraController.");
+                return;
+            }
+            _masterCamera.Rect = _viewPortRect;
         }
 
         public void TransitionToCamera(ICamera cameraTarget)

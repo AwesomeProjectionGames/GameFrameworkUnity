@@ -2,7 +2,6 @@
 
 using AwesomeProjectionCoreUtils.Extensions;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFramework.Spectating
 {
@@ -25,10 +24,6 @@ namespace GameFramework.Spectating
 
         [SerializeField] private bool isFullScreen = true;
 
-        public int PlayerIndex { get; private set; }
-
-        private Rect _viewPortRect = new Rect(0, 0, 1, 1);
-
         protected override void Awake()
         {
             if (isFullScreen)
@@ -40,15 +35,6 @@ namespace GameFramework.Spectating
                 FullScreen = this;
             }
             base.Awake();
-        }
-
-        public void SetViewPort(Rect viewPort)
-        {
-            _viewPortRect = viewPort;
-            if (_masterCamera.IsAlive())
-            {
-                _masterCamera.Rect = _viewPortRect;
-            }
         }
 
         public void Spectate(ISpectate spectate)
