@@ -1,7 +1,10 @@
 ﻿{
     "name": "SurfaceMetadata",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GameFramework",
+        "AwesomeProjectionCoreutils",
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

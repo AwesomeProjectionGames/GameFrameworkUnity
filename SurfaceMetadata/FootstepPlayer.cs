@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
+﻿using GameFramework.Dependencies;
+using UnityEngine;
 
 namespace GameFramework.SurfaceMetadata
 {
@@ -12,10 +12,11 @@ namespace GameFramework.SurfaceMetadata
         CrouchEnd
     }
     
-    public class FootstepPlayer : MonoBehaviour
+    public abstract class FootstepPlayer : MonoBehaviour, IActorComponent
     {
+        public IActor Actor { get; set; }
+        
         [SerializeField] private SurfaceMeta defaultSurfaceMeta;
-        [SerializeField] private AudioSource source;
         [SerializeField] private float castDistance = 10f;
         
         public void PlayFootStep()
@@ -57,9 +58,10 @@ namespace GameFramework.SurfaceMetadata
             }
             if (clips.Length == 0) return;
             AudioClip clip = clips[Random.Range(0, clips.Length)];
-            source.pitch = pitch;
-            source.PlayOneShot(clip, audioModifier.FootstepVolume);
+            PlayClip(clip, audioModifier.FootstepVolume, pitch);
         }
+
+        protected abstract void PlayClip(AudioClip clip, float volume, float pitch);
         
         private void OnDrawGizmosSelected()
         {
