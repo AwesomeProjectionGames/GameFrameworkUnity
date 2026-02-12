@@ -90,16 +90,19 @@ namespace UnityGameFrameworkImplementations.Communications
         // Main Bus Logic
         // ---------------------------------------------------------
 
-        // 1. Storage for subscribers (Same as original)
         private readonly Dictionary<Type, Delegate> _subscriptions;
-
-        // 2. Storage for Queues. We map Type -> IDeferredEventQueue
-        private readonly Dictionary<Type, IDeferredEventQueue> _queues;
+        
+        // Map Type -> Queue for fast lookup during Publish
+        private readonly Dictionary<Type, IDeferredEventQueue> _queuesMap;
+        
+        // List of Queues for safe iteration during Tick (Fixes the Exception)
+        private readonly List<IDeferredEventQueue> _queuesList;
 
         public DeferredEventBus(int initialCapacity = 16)
         {
             _subscriptions = new Dictionary<Type, Delegate>(initialCapacity);
-            _queues = new Dictionary<Type, IDeferredEventQueue>(initialCapacity);
+            _queuesMap = new Dictionary<Type, IDeferredEventQueue>(initialCapacity);
+            _queuesList = new List<IDeferredEventQueue>(initialCapacity);
         }
 
         public void Subscribe<T>(Action<T> handler)
@@ -135,14 +138,14 @@ namespace UnityGameFrameworkImplementations.Communications
 
         public void Publish<T>(T eventItem)
         {
-            // Instead of invoking immediately, we find the specific queue and store the data.
             var type = typeof(T);
 
-            // 1. Get or Create the specific queue for this type
-            if (!_queues.TryGetValue(type, out var buffer))
+            // 1. Get or Create the specific queue
+            if (!_queuesMap.TryGetValue(type, out var buffer))
             {
                 buffer = new DeferredEventQueue<T>();
-                _queues[type] = buffer;
+                _queuesMap[type] = buffer;
+                _queuesList.Add(buffer);
             }
 
             // 2. Cast and Enqueue (No boxing required because DeferredEventQueue<T> knows the type)
@@ -153,12 +156,15 @@ namespace UnityGameFrameworkImplementations.Communications
         {
             _subscriptions.Clear();
             
-            // Also clear pending events
-            foreach(var queue in _queues.Values)
+            // Clear contents of queues
+            foreach(var queue in _queuesList)
             {
                 queue.Clear();
             }
-            _queues.Clear();
+            
+            // Clear the containers
+            _queuesMap.Clear();
+            _queuesList.Clear();
         }
         
         /// <summary>
@@ -167,12 +173,13 @@ namespace UnityGameFrameworkImplementations.Communications
         /// </summary>
         public void Tick(float deltaTime)
         {
-            // Iterate over all active queues and dispatch them.
-            // Note: The order of Types processed relies on Dictionary implementation details.
-            // However, the order of events *within* a Type is strictly FIFO.
-            foreach (var queue in _queues.Values)
+            // A standard for-loop allows the collection size to grow during iteration.
+            // If a handler Publishes a NEW event type, _queuesList.Count increases,
+            // and the loop will simply continue to that new index in the same frame.
+            
+            for (int i = 0; i < _queuesList.Count; i++)
             {
-                queue.Dispatch(_subscriptions);
+                _queuesList[i].Dispatch(_subscriptions);
             }
         }
     }
