@@ -121,7 +121,7 @@ namespace UnityGameFrameworkImplementations.Core
         /// <param name="newOwner">The new owner actor.</param>
         protected virtual void OnOwned(IActor newOwner)
         {
-            EventDispatcher.Publish(new OnActorOwnedEvent(this, IsOwner));
+            EventDispatcher.Publish(new OnActorOwnedEvent(this));
         }
         
         /// <summary>
@@ -129,7 +129,7 @@ namespace UnityGameFrameworkImplementations.Core
         /// </summary>
         protected virtual void OnUnowned()
         {
-            EventDispatcher.Publish(new OnActorUnownedEvent(this, IsOwner));
+            EventDispatcher.Publish(new OnActorUnownedEvent(this));
         }
 
         /// <summary>
