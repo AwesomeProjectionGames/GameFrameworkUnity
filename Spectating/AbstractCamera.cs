@@ -1,4 +1,5 @@
-﻿using GameFramework.Interaction;
+﻿﻿#nullable enable
+using GameFramework.Interaction;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,7 +16,8 @@ namespace GameFramework.Spectating
         public abstract float NearClipPlane { get; set; }
         public abstract float FarClipPlane { get; set; }
         public abstract Rect Rect { get; set; }
-        public Transform Transform => transform;
+        public Vector3 Position { get => transform.position; set => transform.position = value; }
+        public Quaternion Rotation { get => transform.rotation; set => transform.rotation = value; }
 
         [Tooltip("Invoked when the state of the camera changed.")]
         public UnityEvent<bool> OnActiveStateChanged { get; } = new UnityEvent<bool>();
@@ -28,6 +30,11 @@ namespace GameFramework.Spectating
 
         public bool Raycast(LayerMask mask, float maxDistance, out RaycastHit hit)
         {
+            if (Transform == null)
+            {
+                hit = default;
+                return false;
+            }
             return Physics.Raycast(Transform.position, Transform.forward, out hit, maxDistance, mask);
         }
     }

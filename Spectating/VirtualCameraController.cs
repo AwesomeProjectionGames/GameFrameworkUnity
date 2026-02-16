@@ -19,6 +19,9 @@ namespace GameFramework.Spectating
         
         private Rect _viewPortRect = new Rect(0, 0, 1, 1);
         
+        // This serves as a snapshot of the camera state when interrupting a transition
+        private SnapshotCamera? _snapshotCamera;
+
         public Rect ViewPort { get => _viewPortRect; set => SetViewPort(value); }
         
         private void SetViewPort(Rect viewPort)
@@ -39,6 +42,9 @@ namespace GameFramework.Spectating
                 return;
             }
             _masterCamera.Rect = _viewPortRect;
+            
+            // Create a snapshot object
+            _snapshotCamera = new SnapshotCamera();
         }
 
         public void TransitionToCamera(ICamera cameraTarget)
@@ -48,8 +54,19 @@ namespace GameFramework.Spectating
 
         public void TransitionToCamera(ICamera cameraTarget, CameraTransitionSettings transitionSettings)
         {
-            if (_isTransitioning) StopAllCoroutines();
-            StartCoroutine(TransitionCoroutine(cameraTarget, transitionSettings));
+            ICamera? fromCamera = CurrentCamera;
+            
+            if (_isTransitioning)
+            {
+                // We are interrupting a transition.
+                // We take a snapshot of the current master camera state into our snapshot camera.
+                _snapshotCamera!.CopyFrom(_masterCamera);
+                fromCamera = _snapshotCamera;
+                
+                StopAllCoroutines();
+            }
+            
+            StartCoroutine(TransitionCoroutine(fromCamera, cameraTarget, transitionSettings));
         }
 
         protected virtual void LateUpdate()
@@ -58,40 +75,45 @@ namespace GameFramework.Spectating
             CopyCamera(CurrentCamera);
         }
 
-        IEnumerator TransitionCoroutine(ICamera cameraTarget, CameraTransitionSettings transitionSettings)
+        IEnumerator TransitionCoroutine(ICamera? fromCamera, ICamera cameraTarget, CameraTransitionSettings transitionSettings)
         {
             _isTransitioning = true;
-            ICamera? previousCamera = CurrentCamera;
-            ICamera nextCamera = cameraTarget;
-            CurrentCamera = nextCamera;
+            CurrentCamera = cameraTarget;
+            
             float transitionDuration = transitionSettings.transitionDuration;
-            if (previousCamera == null)
+            
+            // If fromCamera is null, we can't transition from anything, so snap.
+            if (fromCamera == null)
             {
                 transitionDuration = 0f;
             }
+            
             if (transitionDuration < 0.01f)
             {
-                CopyCamera(nextCamera);
+                CopyCamera(cameraTarget);
                 _isTransitioning = false;
                 yield break;
             }
+            
             float elapsedTime = 0f;
             while (elapsedTime < transitionDuration)
             {
                 elapsedTime += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsedTime / transitionDuration);
-                LerpCameras(previousCamera!, nextCamera, t);
+                
+                LerpCameras(fromCamera, cameraTarget, t);
                 yield return null;
             }
-            CopyCamera(nextCamera);
+            
+            CopyCamera(cameraTarget);
             _isTransitioning = false;
         }
 
         void LerpCameras(ICamera? fromCamera, ICamera? toCamera, float t)
         {
-            if (!toCamera.IsAlive() || !fromCamera.IsAlive()) return;
-            _masterCamera.Transform.position = Vector3.Lerp(fromCamera.Transform.position, toCamera.Transform.position, t);
-            _masterCamera.Transform.rotation = Quaternion.Slerp(fromCamera.Transform.rotation, toCamera.Transform.rotation, t);
+            if (fromCamera == null || !fromCamera.IsAlive() || toCamera == null || !toCamera.IsAlive()) return;
+            _masterCamera.Position = Vector3.Lerp(fromCamera.Position, toCamera.Position, t);
+            _masterCamera.Rotation = Quaternion.Slerp(fromCamera.Rotation, toCamera.Rotation, t);
             _masterCamera.FieldOfView = Mathf.Lerp(fromCamera.FieldOfView, toCamera.FieldOfView, t);
             _masterCamera.NearClipPlane = Mathf.Lerp(fromCamera.NearClipPlane, toCamera.NearClipPlane, t);
             _masterCamera.FarClipPlane = Mathf.Lerp(fromCamera.FarClipPlane, toCamera.FarClipPlane, t);
@@ -103,12 +125,35 @@ namespace GameFramework.Spectating
         /// <param name="sourceCamera"></param>
         void CopyCamera(ICamera? sourceCamera)
         {
-            if (!sourceCamera.IsAlive()) return;
-            _masterCamera.Transform.position = sourceCamera.Transform.position;
-            _masterCamera.Transform.rotation = sourceCamera.Transform.rotation;
+            if (sourceCamera == null || !sourceCamera.IsAlive()) return;
+            _masterCamera.Position = sourceCamera.Position;
+            _masterCamera.Rotation = sourceCamera.Rotation;
             _masterCamera.FieldOfView = sourceCamera.FieldOfView;
             _masterCamera.NearClipPlane = sourceCamera.NearClipPlane;
             _masterCamera.FarClipPlane = sourceCamera.FarClipPlane;
+        }
+
+        private class SnapshotCamera : ICamera
+        {
+            public bool IsActive { get; set; }
+            public Vector3 Position { get; set; }
+            public Quaternion Rotation { get; set; }
+            public Transform? Transform => null;
+            
+            public float FieldOfView { get; set; }
+            public float NearClipPlane { get; set; }
+            public float FarClipPlane { get; set; }
+            public Rect Rect { get; set; }
+
+            public void CopyFrom(ICamera other)
+            {
+                Position = other.Position;
+                Rotation = other.Rotation;
+                FieldOfView = other.FieldOfView;
+                NearClipPlane = other.NearClipPlane;
+                FarClipPlane = other.FarClipPlane;
+                Rect = other.Rect;
+            }
         }
     }
 }
