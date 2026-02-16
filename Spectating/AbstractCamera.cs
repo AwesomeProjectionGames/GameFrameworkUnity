@@ -30,12 +30,12 @@ namespace GameFramework.Spectating
 
         public bool Raycast(LayerMask mask, float maxDistance, out RaycastHit hit)
         {
-            if (Transform == null)
+            if (transform == null)
             {
                 hit = default;
                 return false;
             }
-            return Physics.Raycast(Transform.position, Transform.forward, out hit, maxDistance, mask);
+            return Physics.Raycast(transform.position, transform.forward, out hit, maxDistance, mask);
         }
     }
 }
