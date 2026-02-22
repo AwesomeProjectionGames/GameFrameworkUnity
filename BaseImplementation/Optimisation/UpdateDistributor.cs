@@ -8,9 +8,7 @@ namespace UnityGameFrameworkImplementations.BaseImplementation.Optimisation
     [DefaultExecutionOrder(-100)] // Ensures this runs before scripts relying on it
     public class UpdateDistributor : MonoBehaviour, ITickDistributor
     {
-        [Header("Load Balancing")]
-        [Tooltip("How many objects are updated per frame for each TickType.")]
-        [SerializeField, Min(1)] private int updatesPerFrame = 5;
+        public int UpdatesPerFrame { get; set; } = 1;
 
         private TickGroup _updateGroup;
         private TickGroup _fixedUpdateGroup;
@@ -37,8 +35,8 @@ namespace UnityGameFrameworkImplementations.BaseImplementation.Optimisation
             else _fixedUpdateGroup.Remove(callback);
         }
 
-        private void Update() => _updateGroup.Process(updatesPerFrame);
-        private void FixedUpdate() => _fixedUpdateGroup.Process(updatesPerFrame);
+        private void Update() => _updateGroup.Process(UpdatesPerFrame);
+        private void FixedUpdate() => _fixedUpdateGroup.Process(UpdatesPerFrame);
 
         // ==========================================
         // INTERNAL SAFE ITERATION LOGIC
