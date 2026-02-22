@@ -1,12 +1,12 @@
 ﻿#nullable enable
 
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using GameFramework;
 using GameFramework.Bus;
 using GameFramework.Dependencies;
 using UnityGameFrameworkImplementations.BaseImplementation.Inventory;
+using UnityGameFrameworkImplementations.BaseImplementation.Optimisation;
 using UnityGameFrameworkImplementations.Communications;
 
 namespace UnityGameFrameworkImplementations.Core
@@ -88,6 +88,7 @@ namespace UnityGameFrameworkImplementations.Core
         protected virtual IEnumerable<object> GetServices()
         {
             yield return new ResourcesItemRegistry();
+            yield return gameObject.AddComponent<UpdateDistributor>();
         }
     }
 }
