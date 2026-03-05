@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GameFramework;
 using UnityEngine;
 
-namespace UnityGameFrameworkImplementations.BaseImplementation.Optimisation
+namespace UnityGameFrameworkImplementations.Optimisation
 {
     [DefaultExecutionOrder(-100)] // Ensures this runs before scripts relying on it
     public class UpdateDistributor : MonoBehaviour, ITickDistributor

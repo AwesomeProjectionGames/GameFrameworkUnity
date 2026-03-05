@@ -4,6 +4,7 @@
     "references": [
         "GameFramework",
         "AwesomeProjectionCoreutils",
+        "GameFrameworkOptimisation",
         "GameFrameworkCommunications",
         "Mirror",
         "Unity.Netcode.Runtime"

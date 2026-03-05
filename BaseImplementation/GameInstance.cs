@@ -6,7 +6,7 @@ using GameFramework;
 using GameFramework.Bus;
 using GameFramework.Dependencies;
 using UnityGameFrameworkImplementations.BaseImplementation.Inventory;
-using UnityGameFrameworkImplementations.BaseImplementation.Optimisation;
+using UnityGameFrameworkImplementations.Optimisation;
 using UnityGameFrameworkImplementations.Communications;
 
 namespace UnityGameFrameworkImplementations.Core
