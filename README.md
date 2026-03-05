@@ -64,8 +64,9 @@ Install only specific modules. You can do this for all folders except `BaseImple
 
 ```
 https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Communications
-https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Effects
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Inventory
 https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Optimisation
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Reactive
 https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/SpawnPoint
 https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Spectating
 https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/SurfaceMetadata
