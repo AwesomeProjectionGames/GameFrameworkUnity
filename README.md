@@ -35,6 +35,13 @@ To install these modules, you can use the Unity Package Manager.
 To do so, open the Unity Package Manager and click on the `+` button in the top left corner. 
 Then select `Add package from git URL...`.
 
+### Install prerequisites
+Paste the following URLs one by one to install the required dependencies:
+```
+https://github.com/AwesomeProjectionGames/CoreUtils.git
+https://github.com/AwesomeProjectionGames/GameFramework.git
+```
+
 ### Option 1: Full Installation (All Modules)
 Includes BaseImplementation, Spectating, SpawnPoint, Effects, and Communications.
 
@@ -53,25 +60,13 @@ Or you can manually add the following line to your `manifest.json` file located 
 ```
 
 ### Option 2: Modular Installation
-Install only specific modules.
+Install only specific modules. You can do this for all folders except `BaseImplementation` as it is using the rest of the modules as dependencies.
 
 ```
-https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Spectating
-https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/SpawnPoint
-https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Effects
 https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Communications
-```
-
-Or you can manually add the following line to your `manifest.json` file located in your project's `Packages` directory (choose the ones you need).
-
-```json
-{
-  "dependencies": {
-    "com.awesomeprojection.gameframework.base": "https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git",
-    "com.awesomeprojection.gameframework.spectating": "https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Spectating",
-    "com.awesomeprojection.gameframework.spawnpoint": "https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/SpawnPoint",
-    "com.awesomeprojection.gameframework.effects": "https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Effects",
-    "com.awesomeprojection.gameframework.communications": "https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Communications"
-  }
-}
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Effects
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Optimisation
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/SpawnPoint
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/Spectating
+https://github.com/AwesomeProjectionGames/UnityGameFrameworkImplementations.git?path=/SurfaceMetadata
 ```
