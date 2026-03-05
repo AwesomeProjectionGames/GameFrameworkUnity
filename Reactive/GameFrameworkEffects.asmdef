@@ -1,5 +1,5 @@
 {
-    "name": "GameFrameworkEffects",
+    "name": "GameFrameworkReactive",
     "rootNamespace": "",
     "references": [
         "GameFramework",

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UnityGameFrameworkImplementations.Communications
+namespace UnityGameFrameworkImplementations.Reactive
 {
     public static class IValueObservableExtension
     {

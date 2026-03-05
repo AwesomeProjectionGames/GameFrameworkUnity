@@ -1,8 +1,7 @@
 ﻿using GameFramework;
 using UnityEngine;
-using UnityGameFrameworkImplementations.Communications;
 
-namespace UnityGameFrameworkImplementations.Core.Utils
+namespace UnityGameFrameworkImplementations.Reactive
 {
     [RequireComponent(typeof(ICamera))]
     public class CurveCameraObserver : ValueObserverMonoBehaviour<float>

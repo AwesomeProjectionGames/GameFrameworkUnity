@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GameFramework.Reactive;
 using UnityEngine;
 
-namespace UnityGameFrameworkImplementations.Communications
+namespace UnityGameFrameworkImplementations.Reactive
 {
     /// <summary>
     /// Unity-specific abstract base class used to expose a simple value of type <typeparamref name="T"/>

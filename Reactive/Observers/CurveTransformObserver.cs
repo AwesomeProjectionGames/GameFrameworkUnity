@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
-using UnityGameFrameworkImplementations.Communications;
 
-namespace UnityGameFrameworkImplementations.Core.Utils
+namespace UnityGameFrameworkImplementations.Reactive
 {
     /// <summary>
     /// Reacts to a float value by transforming a GameObject's position, rotation, or scale based on an AnimationCurve.

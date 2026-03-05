@@ -5,7 +5,7 @@ using AwesomeProjectionCoreUtils.Extensions;
 using GameFramework.Reactive;
 using UnityEngine;
 
-namespace UnityGameFrameworkImplementations.Communications
+namespace UnityGameFrameworkImplementations.Reactive
 {
     /// <summary>
     /// Abstract base class for objects that react to simple value changes
