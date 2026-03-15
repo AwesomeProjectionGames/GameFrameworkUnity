@@ -2,14 +2,12 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace GameFramework.Spectating
 {
     /// <summary>
     /// Unity component that represents a physical camera in the scene (implementing ICamera, like a wrapper).
     /// </summary>
-    [RequireComponent(typeof(Camera))]
     public class PhysicalCamera : AbstractCamera
     {
         public override bool IsActive
@@ -20,9 +18,12 @@ namespace GameFramework.Spectating
                 if (Camera.enabled != value)
                 {
                     Camera.enabled = value;
-                    if (AudioListener != null)
+                    foreach (var component in _componentsToEnableWithCamera)
                     {
-                        AudioListener.enabled = value;
+                        if (component != null)
+                        {
+                            component.enabled = value;
+                        }
                     }
                     OnActiveStateChanged.Invoke(value);
                 }
@@ -54,21 +55,8 @@ namespace GameFramework.Spectating
         }
 
         private Camera Camera => _camera ??= GetComponent<Camera>();
-
-        private AudioListener? AudioListener
-        {
-            get
-            {
-                if (!_hasCheckedAudioListener)
-                {
-                    _audioListener = GetComponent<AudioListener>();
-                    _hasCheckedAudioListener = true;
-                }
-                return _audioListener;
-            }
-        }
-        private Camera? _camera;
-        private AudioListener? _audioListener;
-        private bool _hasCheckedAudioListener = false;
+        
+        [SerializeField] private Camera? _camera;
+        [SerializeField] MonoBehaviour[] _componentsToEnableWithCamera = Array.Empty<MonoBehaviour>();
     }
 }
