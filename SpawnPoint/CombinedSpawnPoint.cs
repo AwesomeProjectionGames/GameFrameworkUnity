@@ -49,8 +49,25 @@ namespace GameFramework.SpawnPoint
         /// <returns>The position and rotation of the selected spawn point</returns>
         public override Tuple<Vector3, Quaternion> Select()
         {
-            IEnumerable<ISpawnPoint> spawnPoints = _spawnPoints.Where((spawnpoint) => spawnpoint.IsAlive() && spawnpoint.IsAvailableNow);
-            return spawnPoints.RandomElement().Select();
+            // 1. Try to find the ideal candidates
+            var availablePoints = _spawnPoints.Where(sp => sp.IsAlive() && sp.IsAvailableNow);
+
+            if (availablePoints.Any())
+            {
+                return availablePoints.RandomElement().Select();
+            }
+
+            // 2. Fallback: If no one is "available," just pick any alive point
+            var fallbackPoints = _spawnPoints.Where(sp => sp.IsAlive());
+    
+            if (fallbackPoints.Any())
+            {
+                return fallbackPoints.RandomElement().Select();
+            }
+
+            // 3. Absolute safety: Return a default (e.g., world origin) or log an error
+            Debug.LogWarning("No valid spawn points found! Spawning at origin.");
+            return new Tuple<Vector3, Quaternion>(Vector3.zero, Quaternion.identity);
         }
     }
 }
