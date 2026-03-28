@@ -17,7 +17,7 @@ namespace UnityGameFrameworkImplementations.Core
     /// Persists across scene loads via DontDestroyOnLoad.
     /// </summary>
     [DefaultExecutionOrder(-9999)] // Ensure this initializes before almost everything else
-    public class GameInstance : MonoBehaviour, IGameInstance
+    public class GameInstance : MonoEntity, IGameInstance
     {
         /// <summary>
         /// Singleton accessor.
@@ -27,36 +27,27 @@ namespace UnityGameFrameworkImplementations.Core
         public static IGameInstance? Instance { get; private set; }
 
         #region IGameInstance Implementation
-
-        public IEventBus EventBus => _eventBus;
-        public IComponentsContainer Services => _services;
         public IGameMode? CurrentGameMode { get; set; }
 
         #endregion
 
-        private readonly DeferredEventBus _eventBus = new();
-        private readonly ComponentsContainer _services = new();
-        
 
-        private void Awake()
+        protected override void Awake()
         {
             ManageSingleton();
             
-            if (Instance == this)
+            if (ReferenceEquals(Instance, this))
             {
-                _services.RegisterComponents(GetServices());
+                ComponentsContainerField.RegisterComponents(GetServices());
             }
+            
+            base.Awake();
         }
 
-        private void Update()
-        {
-            if (Instance != this) return;
-            _eventBus.Tick(Time.deltaTime);
-        }
 
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (ReferenceEquals(Instance, this))
             {
                 CurrentGameMode = null;
                 Instance = null;

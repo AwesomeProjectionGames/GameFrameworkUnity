@@ -8,20 +8,20 @@ namespace GameFramework.Spectating
     /// A GameObjectUnityEventsSpectated but specific to actors
     /// When actors are owned, we automatically spectate this actor (if it's owned by the local player)
     /// </summary>
-    public class ActorUnityEventsSpectated : GameObjectUnityEventsSpectated, IActorComponent
+    public class ActorUnityEventsSpectated : GameObjectUnityEventsSpectated, IEntityComponent
     {
-        public IActor Actor { get; set; }
+        public IEntity Entity { get; set; }
 
         private void Start()
         {
-            Actor.EventDispatcher.Subscribe<OnActorOwnedEvent>(OnActorOwned);
-            Actor.EventDispatcher.Subscribe<OnActorUnownedEvent>(OnActorUnowned);
+            Entity.EventDispatcher.Subscribe<OnActorOwnedEvent>(OnActorOwned);
+            Entity.EventDispatcher.Subscribe<OnActorUnownedEvent>(OnActorUnowned);
         }
 
         private void OnDestroy()
         {
-            Actor.EventDispatcher.Unsubscribe<OnActorOwnedEvent>(OnActorOwned);
-            Actor.EventDispatcher.Unsubscribe<OnActorUnownedEvent>(OnActorUnowned);
+            Entity.EventDispatcher.Unsubscribe<OnActorOwnedEvent>(OnActorOwned);
+            Entity.EventDispatcher.Unsubscribe<OnActorUnownedEvent>(OnActorUnowned);
         }
 
         private void OnActorOwned(OnActorOwnedEvent evt)

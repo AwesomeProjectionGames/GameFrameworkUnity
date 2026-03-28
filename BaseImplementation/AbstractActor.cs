@@ -1,15 +1,10 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Generic;
 using AwesomeProjectionCoreUtils.Extensions;
 using GameFramework;
-using GameFramework.Bus;
-using GameFramework.Dependencies;
 using GameFramework.Events;
 using GameFramework.Identification;
-using UnityEngine;
-using UnityGameFrameworkImplementations.Communications;
 
 namespace UnityGameFrameworkImplementations.Core
 {
@@ -21,42 +16,15 @@ namespace UnityGameFrameworkImplementations.Core
     /// 
     /// No networking logic; just shared Actor functionality.
     /// </summary>
-    public abstract class AbstractActor : NetBehaviour, IActor
+    public abstract class AbstractActor : NetEntity, IActor
     {
-        public Transform Transform => transform;
-        public IEventBus EventDispatcher => _eventBus;
-        public IComponentsContainer ComponentsContainer => _componentsContainer;
         public IActor? Owner => _owner;
         
         public abstract string UUID { get; }
         public event Action? OnAnyOwnerChanged;
         public event Action? OnOwnerChanged;
         
-        private readonly DeferredEventBus _eventBus = new();
-        private readonly ComponentsContainer _componentsContainer = new();
-        private readonly Dictionary<Type, IReadOnlyList<IActorComponent>> _componentCache = new Dictionary<Type, IReadOnlyList<IActorComponent>>();
-        
         protected IActor? _owner;
-
-        protected virtual void Awake()
-        {
-            var allComponents = GetComponentsInChildren<IActorComponent>(true);
-            AssignActorToComponents(allComponents); // all.Actor = this
-            _componentsContainer.RegisterComponents(allComponents);
-        }
-
-        protected virtual void Update()
-        {
-            _eventBus.Tick(Time.deltaTime);
-        }
-
-        private void AssignActorToComponents(IActorComponent[] components)
-        {
-            foreach (var component in components)
-            {
-                component.Actor = this;
-            }
-        }
         
         /// <summary>
         /// Try to add a new actor as a parent owner.

@@ -12,9 +12,9 @@ namespace GameFramework.SurfaceMetadata
         CrouchEnd
     }
     
-    public abstract class FootstepPlayer : MonoBehaviour, IActorComponent
+    public abstract class FootstepPlayer : MonoBehaviour, IEntityComponent
     {
-        public IActor Actor { get; set; }
+        public IEntity Entity { get; set; }
         
         [SerializeField] private SurfaceMeta defaultSurfaceMeta;
         [SerializeField] private float castDistance = 10f;
