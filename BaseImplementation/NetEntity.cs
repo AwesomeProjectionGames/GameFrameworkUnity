@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using GameFramework;
+﻿using GameFramework;
 using GameFramework.Bus;
 using GameFramework.Dependencies;
 using UnityEngine;
+using UnityGameFrameworkImplementations.BaseImplementation;
 using UnityGameFrameworkImplementations.Communications;
 
 namespace UnityGameFrameworkImplementations.Core
@@ -13,8 +12,10 @@ namespace UnityGameFrameworkImplementations.Core
     /// - Registers components in a container
     /// - Provides event bus and transform access
     /// </summary>
-    public class NetEntity : NetBehaviour, IEntity
+    public class NetEntity : NetBehaviour, IEntity, IEntityComponent
     {
+        public IEntity Entity { get; set; }
+        
         public Transform Transform => transform;
         public IEventBus EventDispatcher => DeferredEventBus;
         public IComponentsContainer ComponentsContainer => ComponentsContainerField;
@@ -25,6 +26,7 @@ namespace UnityGameFrameworkImplementations.Core
         protected virtual void Awake()
         {
             this.InitializeEntityComponents(ComponentsContainerField);
+            this.InjectEntityDependencies();
         }
 
         protected virtual void Update()
