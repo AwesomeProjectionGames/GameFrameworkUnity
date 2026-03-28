@@ -3,6 +3,7 @@
 using System.Collections;
 using AwesomeProjectionCoreUtils.Extensions;
 using UnityEngine;
+using UnityGameFrameworkImplementations.Core;
 
 namespace GameFramework.Spectating
 {
@@ -10,7 +11,7 @@ namespace GameFramework.Spectating
     /// Unity component that controls virtual cameras and their transitions.
     /// </summary>
     [RequireComponent(typeof(ICamera))]
-    public class VirtualCameraController : MonoBehaviour, ICameraController
+    public class VirtualCameraController : MonoEntity, ICameraController
     {
         public ICamera? CurrentCamera { get; protected set; }
 
