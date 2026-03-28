@@ -34,8 +34,10 @@ namespace GameFramework.Spectating
             }
         }
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             _masterCamera = GetComponent<ICamera>();
             if (!_masterCamera.IsValid())
             {
