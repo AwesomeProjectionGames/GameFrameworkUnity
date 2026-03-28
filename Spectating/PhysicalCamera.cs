@@ -53,6 +53,11 @@ namespace GameFramework.Spectating
             get => Camera.rect;
             set => Camera.rect = value;
         }
+        
+        public override Vector3 WorldToScreenPoint(Vector3 position)
+        {
+            return Camera.WorldToScreenPoint(position);
+        }
 
         private Camera Camera => _camera ??= GetComponent<Camera>();
         

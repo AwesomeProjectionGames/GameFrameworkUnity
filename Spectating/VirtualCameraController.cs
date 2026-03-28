@@ -127,6 +127,11 @@ namespace GameFramework.Spectating
             {
                 this.CopyFrom(other, true);
             }
+            
+            public Vector3 WorldToScreenPoint(Vector3 position)
+            {
+                return Vector3.zero;
+            }
         }
     }
 }

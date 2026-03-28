@@ -39,6 +39,11 @@ namespace GameFramework.Spectating
 
         public override Rect Rect { get; set; } = new Rect(0, 0, 1, 1);
 
+        public override Vector3 WorldToScreenPoint(Vector3 position)
+        {
+            return Vector3.zero;
+        }
+
         [SerializeField] private float fieldOfView = 60f;
         [SerializeField] private float nearClipPlane = 0.1f;
         [SerializeField] private float farClipPlane = 1000f;

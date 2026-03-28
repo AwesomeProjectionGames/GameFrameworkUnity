@@ -19,6 +19,8 @@ namespace GameFramework.Spectating
         public Vector3 Position { get => transform.position; set => transform.position = value; }
         public Quaternion Rotation { get => transform.rotation; set => transform.rotation = value; }
 
+        public abstract Vector3 WorldToScreenPoint(Vector3 position);
+
         [Tooltip("Invoked when the state of the camera changed.")]
         public UnityEvent<bool> OnActiveStateChanged { get; } = new UnityEvent<bool>();
 
