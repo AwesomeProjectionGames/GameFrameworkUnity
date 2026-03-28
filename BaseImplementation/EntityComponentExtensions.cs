@@ -57,47 +57,52 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
                 return;
             }
 
-            var type = component.GetType();
-            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-            // 2. Handle Fields
-            var fields = type.GetFields(flags);
-            foreach (var field in fields)
+            var currentType = component.GetType();
+            while (currentType != null && currentType != typeof(object))
             {
-                var attr = field.GetCustomAttribute<BindEntityComponentAttribute>();
-                if (attr == null) continue;
-
-                if (TryResolveDependency(component.Entity, field.FieldType, out var result))
+                // 2. Handle Fields
+                var fields = currentType.GetFields(flags);
+                foreach (var field in fields)
                 {
-                    field.SetValue(component, result);
-                }
-                else if (attr.IsRequired)
-                {
-                    Debug.LogError($"[InjectEntityDependencies] Required dependency '{field.FieldType.Name}' missing for '{type.Name}' on '{component.Entity.Transform.gameObject.name}'", component.Entity.Transform);
-                }
-            }
+                    var attr = field.GetCustomAttribute<BindEntityComponentAttribute>();
+                    if (attr == null) continue;
 
-            // 3. Handle Properties
-            var properties = type.GetProperties(flags);
-            foreach (var prop in properties)
-            {
-                var attr = prop.GetCustomAttribute<BindEntityComponentAttribute>();
-                if (attr == null) continue;
-
-                if (!prop.CanWrite)
-                {
-                    Debug.LogError($"[InjectEntityDependencies] Property '{prop.Name}' in '{type.Name}' is marked for binding but is read-only.");
-                    continue;
+                    if (TryResolveDependency(component.Entity, field.FieldType, out var result))
+                    {
+                        field.SetValue(component, result);
+                    }
+                    else if (attr.IsRequired)
+                    {
+                        Debug.LogError($"[InjectEntityDependencies] Required dependency '{field.FieldType.Name}' missing for '{currentType.Name}' on '{component.Entity.Transform.gameObject.name}'", component.Entity.Transform);
+                    }
                 }
 
-                if (TryResolveDependency(component.Entity, prop.PropertyType, out var result))
+                // 3. Handle Properties
+                var properties = currentType.GetProperties(flags);
+                foreach (var prop in properties)
                 {
-                    prop.SetValue(component, result);
+                    var attr = prop.GetCustomAttribute<BindEntityComponentAttribute>();
+                    if (attr == null) continue;
+
+                    if (!prop.CanWrite)
+                    {
+                        Debug.LogError($"[InjectEntityDependencies] Property '{prop.Name}' in '{currentType.Name}' is marked for binding but is read-only.");
+                        continue;
+                    }
+
+                    if (TryResolveDependency(component.Entity, prop.PropertyType, out var result))
+                    {
+                        prop.SetValue(component, result);
+                    }
+                    else if (attr.IsRequired)
+                    {
+                        Debug.LogError($"[InjectEntityDependencies] Required dependency '{prop.PropertyType.Name}' missing for '{currentType.Name}' on '{component.Entity.Transform.gameObject.name}'", component.Entity.Transform);
+                    }
                 }
-                else if (attr.IsRequired)
-                {
-                    Debug.LogError($"[InjectEntityDependencies] Required dependency '{prop.PropertyType.Name}' missing for '{type.Name}' on '{component.Entity.Transform.gameObject.name}'", component.Entity.Transform);
-                }
+                
+                currentType = currentType.BaseType;
             }
         }
         
