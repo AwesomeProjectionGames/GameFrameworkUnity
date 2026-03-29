@@ -36,19 +36,29 @@ namespace UnityGameFrameworkImplementations.Communications
             }
 
             // 2. Convert Buckets to Typed Arrays and cache them
-            _componentCache.Clear();
             foreach (var kvp in tempBuckets)
             {
                 Type typeKey = kvp.Key;
                 var objList = kvp.Value;
 
+                int existingLength = 0;
+                if (_componentCache.TryGetValue(typeKey, out var existingArray))
+                {
+                    existingLength = existingArray.Length;
+                }
+
                 // 1. Create the specific array type (e.g., IHealth[], int[])
                 // We use the base class 'Array' instead of casting to 'object[]'
-                Array typedArray = Array.CreateInstance(typeKey, objList.Count);
+                Array typedArray = Array.CreateInstance(typeKey, existingLength + objList.Count);
+
+                if (existingArray != null)
+                {
+                    Array.Copy(existingArray, typedArray, existingLength);
+                }
 
                 // 2. Use ICollection.CopyTo to fill the array efficiently
                 // This handles the copying internally and avoids the explicit manual loop
-                ((System.Collections.ICollection)objList).CopyTo(typedArray, 0);
+                ((System.Collections.ICollection)objList).CopyTo(typedArray, existingLength);
 
                 _componentCache[typeKey] = typedArray;
             }
