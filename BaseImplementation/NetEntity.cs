@@ -1,4 +1,5 @@
-﻿using GameFramework;
+﻿using System;
+using GameFramework;
 using GameFramework.Bus;
 using GameFramework.Dependencies;
 using UnityEngine;
@@ -26,6 +27,10 @@ namespace UnityGameFrameworkImplementations.Core
         protected virtual void Awake()
         {
             this.InitializeEntityComponents(ComponentsContainerField);
+        }
+
+        protected virtual void Start()
+        {
             this.InjectEntityDependencies();
         }
 
