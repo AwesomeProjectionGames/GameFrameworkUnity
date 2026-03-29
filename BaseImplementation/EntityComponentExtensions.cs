@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using AwesomeProjectionCoreUtils.Extensions;
 using GameFramework;
@@ -106,8 +107,44 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
             }
         }
         
-        private static bool TryResolveDependency(IEntity entity, Type targetType, out object? result)
+        private static bool TryResolveDependency(IEntity entity, Type targetType, out object result)
         {
+            // Handle array / collection requests (e.g., IReadOnlyList<T>, IEnumerable<T>, T[], IList<T>, List<T>)
+            if (targetType.IsGenericType)
+            {
+                var genericType = targetType.GetGenericTypeDefinition();
+                if (genericType == typeof(IEnumerable<>) || 
+                    genericType == typeof(IReadOnlyList<>) ||
+                    genericType == typeof(IReadOnlyCollection<>) ||
+                    genericType == typeof(IList<>) ||
+                    genericType == typeof(ICollection<>) ||
+                    genericType == typeof(List<>))
+                {
+                    Type elementType = targetType.GetGenericArguments()[0];
+                    if (TryResolveComponents(entity, elementType, out var componentsList))
+                    {
+                        if (genericType == typeof(List<>))
+                        {
+                            result = Activator.CreateInstance(targetType, componentsList);
+                        }
+                        else
+                        {
+                            result = componentsList;
+                        }
+                        return true;
+                    }
+                }
+            }
+            if (targetType.IsArray)
+            {
+                Type elementType = targetType.GetElementType()!;
+                if (TryResolveComponents(entity, elementType, out var componentsArray))
+                {
+                    result = componentsArray;
+                    return true;
+                }
+            }
+
             result = entity.ComponentsContainer.GetComponent(targetType);
             if(result == null)
             {
@@ -128,6 +165,60 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
                 result = GameInstance.Instance?.ComponentsContainer.GetComponent(targetType);
             }
             return result != null;
+        }
+
+        private static bool TryResolveComponents(IEntity entity, Type elementType, out object result)
+        {
+            // Use reflection to call Generic GetComponents<T>()
+            var method = typeof(IComponentsContainer).GetMethod(nameof(IComponentsContainer.GetComponents))?.MakeGenericMethod(elementType);
+            if (method == null)
+            {
+                result = null;
+                return false;
+            }
+
+            var localComponents = method.Invoke(entity.ComponentsContainer, null) as System.Collections.IEnumerable;
+            
+            // If the local container doesn't have it, we might want to check GameMode/GameInstance just like single fields
+            // For now, let's just attempt local resolving. If we want to strictly follow single resolve pattern:
+            bool hasElements = false;
+            if (localComponents != null)
+            {
+                foreach (var _ in localComponents) { hasElements = true; break; }
+            }
+
+            if (hasElements)
+            {
+                result = localComponents;
+                return true;
+            }
+
+            // Fallback to game mode
+            if (GameInstance.Instance?.CurrentGameMode?.ComponentsContainer != null)
+            {
+                var gmComponents = method.Invoke(GameInstance.Instance.CurrentGameMode.ComponentsContainer, null) as System.Collections.IEnumerable;
+                foreach (var _ in gmComponents ?? Array.Empty<object>()) { hasElements = true; break; }
+                if (hasElements)
+                {
+                    result = gmComponents;
+                    return true;
+                }
+            }
+
+            // Fallback to global GameInstance
+            if (GameInstance.Instance?.ComponentsContainer != null)
+            {
+                var giComponents = method.Invoke(GameInstance.Instance.ComponentsContainer, null) as System.Collections.IEnumerable;
+                foreach (var _ in giComponents ?? Array.Empty<object>()) { hasElements = true; break; }
+                if (hasElements)
+                {
+                    result = giComponents;
+                    return true;
+                }
+            }
+
+            result = null;
+            return false;
         }
     }
 }
