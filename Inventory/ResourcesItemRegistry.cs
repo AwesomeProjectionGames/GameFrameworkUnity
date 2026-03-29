@@ -27,7 +27,7 @@ namespace UnityGameFrameworkImplementations.Inventory
             foreach (var prefab in prefabs)
             {
                 // Find all IItem components in the prefab (including children)
-                var items = prefab.GetComponentsInChildren<IItemActor>(true);
+                var items = prefab.GetComponentsInChildren<IItemEntityComponent>(true);
 
                 foreach (var item in items)
                 {

@@ -11,13 +11,13 @@ namespace UnityGameFrameworkImplementations.Inventory
 {
     public class ItemRegistry : IItemRegistry
     {
-        private readonly Dictionary<string, IItemActor> _items = new Dictionary<string, IItemActor>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IItemEntityComponent> _items = new Dictionary<string, IItemEntityComponent>(StringComparer.OrdinalIgnoreCase);
 
-        public IItemActor? this[string id] => GetItemOfId(id);
+        public IItemEntityComponent? this[string id] => GetItemOfId(id);
 
-        public IEnumerable<IItemActor> AllItems => _items.Values;
+        public IEnumerable<IItemEntityComponent> AllItems => _items.Values;
 
-        public IItemActor? GetItemOfId(string id)
+        public IItemEntityComponent? GetItemOfId(string id)
         {
             if (!_items.TryGetValue(id, out var item))
             {
@@ -33,7 +33,7 @@ namespace UnityGameFrameworkImplementations.Inventory
             return (T?)GetItemOfId(id);
         }
 
-        public bool RegisterItem(string id, IItemActor item)
+        public bool RegisterItem(string id, IItemEntityComponent item)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (item == null) throw new ArgumentNullException(nameof(item));
@@ -45,7 +45,7 @@ namespace UnityGameFrameworkImplementations.Inventory
             return true;
         }
 
-        public IEnumerator<IItemActor> GetEnumerator() => _items.Values.GetEnumerator();
+        public IEnumerator<IItemEntityComponent> GetEnumerator() => _items.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
