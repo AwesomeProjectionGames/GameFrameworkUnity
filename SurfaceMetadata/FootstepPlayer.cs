@@ -40,25 +40,41 @@ namespace GameFramework.SurfaceMetadata
                 }
             }
 
-            AudioClip[] clips = audioModifier.FootstepSounds;
-            switch (specialFootstepType)
+            AudioClip[] clips = null;
+            SurfaceMeta currentMeta = audioModifier;
+            float volume = audioModifier.FootstepVolume;
+
+            while (currentMeta != null)
             {
-                case SpecialFootstepType.Jump:
-                    clips = audioModifier.JumpSounds;
+                clips = currentMeta.FootstepSounds;
+                switch (specialFootstepType)
+                {
+                    case SpecialFootstepType.Jump:
+                        clips = currentMeta.JumpSounds;
+                        break;
+                    case SpecialFootstepType.Down:
+                        clips = currentMeta.LandingSounds;
+                        break;
+                    case SpecialFootstepType.CrouchStart:
+                        clips = currentMeta.CrouchSounds;
+                        break;
+                    case SpecialFootstepType.CrouchEnd: 
+                        clips = currentMeta.SlideSounds;
+                        break;
+                }
+                
+                if (clips != null && clips.Length > 0)
+                {
+                    volume = currentMeta.FootstepVolume;
                     break;
-                case SpecialFootstepType.Down:
-                    clips = audioModifier.LandingSounds;
-                    break;
-                case SpecialFootstepType.CrouchStart:
-                    clips = audioModifier.CrouchSounds;
-                    break;
-                case SpecialFootstepType.CrouchEnd: 
-                    clips = audioModifier.SlideSounds;
-                    break;
+                }
+                
+                currentMeta = currentMeta.Parent;
             }
-            if (clips.Length == 0) return;
+
+            if (clips == null || clips.Length == 0) return;
             AudioClip clip = clips[Random.Range(0, clips.Length)];
-            PlayClip(clip, audioModifier.FootstepVolume, pitch);
+            PlayClip(clip, volume, pitch);
         }
 
         protected abstract void PlayClip(AudioClip clip, float volume, float pitch);
