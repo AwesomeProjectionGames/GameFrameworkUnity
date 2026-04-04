@@ -2,6 +2,12 @@
 
 namespace GameFramework.SurfaceMetadata
 {
+    [System.Serializable]
+    public struct AudioClipArray
+    {
+        public AudioClip[] Clips;
+    }
+
     [CreateAssetMenu(fileName = "SurfaceMeta", menuName = "AwesomeProjection/Surface Metadata/SurfaceMeta", order = 1)]
     public class SurfaceMeta : ScriptableObject
     {
@@ -17,8 +23,8 @@ namespace GameFramework.SurfaceMetadata
         
         public AudioClip ScrapeSound;
         public AudioClip[] ContentsWhenShaken;
-        public AudioClip[][] ImpactSoundsByIntensityGroup;
-        public AudioClip[][] AdditionnalFole;
+        public AudioClipArray[] ImpactSoundsByIntensityGroup;
+        public AudioClipArray[] AdditionnalFoley;
         
         public float FootstepVolume = 1f;
     }

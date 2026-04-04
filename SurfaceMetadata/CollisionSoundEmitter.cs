@@ -53,7 +53,7 @@ namespace GameFramework.SurfaceMetadata
             SurfaceMeta current = meta;
             while (current != null)
             {
-                var groups = foley ? current.AdditionnalFole : current.ImpactSoundsByIntensityGroup;
+                var groups = foley ? current.AdditionnalFoley : current.ImpactSoundsByIntensityGroup;
                 
                 if (groups != null && groups.Length > 0)
                 {
@@ -61,9 +61,9 @@ namespace GameFramework.SurfaceMetadata
                     int clampedIdx = Mathf.Min(idx, groups.Length - 1);
                     var clips = groups[clampedIdx];
 
-                    if (clips != null && clips.Length > 0)
+                    if (clips.Clips != null && clips.Clips.Length > 0)
                     {
-                        AudioClip clip = clips[Random.Range(0, clips.Length)];
+                        AudioClip clip = clips.Clips[Random.Range(0, clips.Clips.Length)];
                         if (clip != null)
                         {
                             AudioSource.PlayOneShot(clip, 1f);
