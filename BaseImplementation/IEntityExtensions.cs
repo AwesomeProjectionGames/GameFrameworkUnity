@@ -34,7 +34,31 @@ namespace UnityGameFrameworkImplementations.Core
         {
             return GameInstance.Instance?.EventDispatcher;
         }
-
+        
+        /// <summary>
+        /// Spawn / Instantiate a clone of this entity at the specified location and rotation.
+        /// </summary>
+        public static IEntity? Clone(this IEntity entity, bool destroyWithScene = true)
+        {
+            return entity.GameMode()?.Spawn(entity, destroyWithScene);
+        }
+        
+        /// <summary>
+        /// Spawn / Instantiate a clone of this entity at the specified location and rotation.
+        /// </summary>
+        public static IEntity? Clone(this IEntity entity, Vector3 location, Quaternion rotation, bool destroyWithScene = true)
+        {
+            return entity.GameMode()?.SpawnAtLocation(entity, location, rotation, destroyWithScene);
+        }
+        
+        /// <summary>
+        /// Clones the MeshRenderers (and optionally Colliders) from this GameObject, returning a new GameObject representing the cloned visual hierarchy.
+        /// </summary>
+        /// <returns>The gameobject clone with only mesh and optionnally, colliders</returns>
+        public static GameObject CloneVisual(this IEntity entity, bool withCollider = false, Vector3? localPosition = null, Quaternion? localRotation = null, Transform? parent = null)
+        {
+            return entity.Transform.gameObject.CloneVisual();
+        }
         /// <summary>
         /// Moves the entity to the specified position and rotation. If the entity has a physics component, it will be teleported using the physics system. Otherwise, the transform will be directly modified.
         /// </summary>
