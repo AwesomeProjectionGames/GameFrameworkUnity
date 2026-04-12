@@ -162,7 +162,7 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
             if(result == null)
             {
                 // Try to get from the global GameInstance
-                result = entity.GameMode()?.ComponentsContainer.GetComponent(targetType);
+                result = GameInstance.Instance?.ComponentsContainer.GetComponent(targetType);
             }
             return result != null;
         }
