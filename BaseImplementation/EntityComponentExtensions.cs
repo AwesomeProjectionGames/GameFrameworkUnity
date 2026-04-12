@@ -157,12 +157,12 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
             if(result == null)
             {
                 // Try to get from the game mode (which can be useful for shared services or managers)
-                result = GameInstance.Instance?.CurrentGameMode?.ComponentsContainer.GetComponent(targetType);
+                result = entity.GameMode()?.ComponentsContainer.GetComponent(targetType);
             }
             if(result == null)
             {
                 // Try to get from the global GameInstance
-                result = GameInstance.Instance?.ComponentsContainer.GetComponent(targetType);
+                result = entity.GameMode()?.ComponentsContainer.GetComponent(targetType);
             }
             return result != null;
         }
@@ -194,9 +194,9 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
             }
 
             // Fallback to game mode
-            if (GameInstance.Instance?.CurrentGameMode?.ComponentsContainer != null)
+            if (entity.GameMode()?.ComponentsContainer != null)
             {
-                var gmComponents = method.Invoke(GameInstance.Instance.CurrentGameMode.ComponentsContainer, null) as System.Collections.IEnumerable;
+                var gmComponents = method.Invoke(entity.GameMode()?.ComponentsContainer, null) as System.Collections.IEnumerable;
                 foreach (var _ in gmComponents ?? Array.Empty<object>()) { hasElements = true; break; }
                 if (hasElements)
                 {
@@ -206,9 +206,9 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
             }
 
             // Fallback to global GameInstance
-            if (GameInstance.Instance?.ComponentsContainer != null)
+            if (entity.GlobalEventDispatcher() != null)
             {
-                var giComponents = method.Invoke(GameInstance.Instance.ComponentsContainer, null) as System.Collections.IEnumerable;
+                var giComponents = method.Invoke(entity.GlobalEventDispatcher(), null) as System.Collections.IEnumerable;
                 foreach (var _ in giComponents ?? Array.Empty<object>()) { hasElements = true; break; }
                 if (hasElements)
                 {
