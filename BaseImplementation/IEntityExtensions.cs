@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using AwesomeProjectionCoreUtils.Extensions;
 using GameFramework;
@@ -57,7 +57,16 @@ namespace UnityGameFrameworkImplementations.Core
         /// <returns>The gameobject clone with only mesh and optionnally, colliders</returns>
         public static GameObject CloneVisual(this IEntity entity, bool withCollider = false, Vector3? localPosition = null, Quaternion? localRotation = null, Transform? parent = null)
         {
-            return entity.Transform.gameObject.CloneVisual();
+            return entity.Transform.gameObject.CloneVisual(withCollider, localPosition, localRotation, parent);
+        }
+
+        /// <summary>
+        /// Clones the MeshRenderers (and optionally Colliders) from this GameObject, returning a new GameObject representing the cloned visual hierarchy.
+        /// Outputs the instantiated target renderers.
+        /// </summary>
+        public static GameObject CloneVisual(this IEntity entity, out System.Collections.Generic.List<MeshRenderer> targetRenderers, bool withCollider = false, Vector3? localPosition = null, Quaternion? localRotation = null, Transform? parent = null)
+        {
+            return entity.Transform.gameObject.CloneVisual(out targetRenderers, withCollider, localPosition, localRotation, parent);
         }
         /// <summary>
         /// Moves the entity to the specified position and rotation. If the entity has a physics component, it will be teleported using the physics system. Otherwise, the transform will be directly modified.
