@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using AwesomeProjectionCoreUtils.Extensions;
@@ -35,7 +35,8 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
         /// Automatically populates fields and properties marked with [BindEntityComponent] 
         /// by resolving them against the component's Entity.
         /// Like a lightweight Dependency Injection system for Entity Components.
-        /// You should call this method in the Start method of your IEntityComponent implementation (as OnEnable/Awake might be too early / race condition).
+        /// This method is idempotent: fields and properties that are already assigned will be skipped.
+        /// It can safely be called multiple times across the lifecycle (e.g. immediately upon cloning/instantiation, or in Start()).
         /// </summary>
         /// <param name="component">The component requesting injection.</param>
         public static void InjectEntityDependencies(this IEntityComponent component)
@@ -70,6 +71,13 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
                     var attr = field.GetCustomAttribute<BindEntityComponentAttribute>();
                     if (attr == null) continue;
 
+                    // Skip if already assigned with a valid reference
+                    var currentValue = field.GetValue(component);
+                    if (currentValue != null && (!(currentValue is UnityEngine.Object uo) || uo != null))
+                    {
+                        continue;
+                    }
+
                     if (TryResolveDependency(component.Entity, field.FieldType, out var result))
                     {
                         field.SetValue(component, result);
@@ -91,6 +99,16 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
                     {
                         Debug.LogError($"[InjectEntityDependencies] Property '{prop.Name}' in '{currentType.Name}' is marked for binding but is read-only.");
                         continue;
+                    }
+
+                    // Skip if already assigned with a valid reference
+                    if (prop.CanRead)
+                    {
+                        var currentValue = prop.GetValue(component);
+                        if (currentValue != null && (!(currentValue is UnityEngine.Object uo) || uo != null))
+                        {
+                            continue;
+                        }
                     }
 
                     if (TryResolveDependency(component.Entity, prop.PropertyType, out var result))
