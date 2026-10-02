@@ -1,4 +1,5 @@
 ﻿using System;
+using GameFramework;
 using GameFramework.Inventory;
 using UnityEngine;
 
@@ -33,16 +34,18 @@ namespace UnityGameFrameworkImplementations.Inventory
                 {
                     try
                     {
-                        if (string.IsNullOrEmpty(item.Identifier))
+                        var actor = item.Entity as IActor;
+                        string id = actor?.ResourcePath ?? string.Empty;
+                        if (string.IsNullOrEmpty(id))
                         {
-                            Debug.LogWarning($"Item in prefab '{prefab.name}' has null or empty Identifier, skipping.");
+                            Debug.LogWarning($"Item in prefab '{prefab.name}' has null or empty ResourcePath on its actor, skipping.");
                             continue;
                         }
 
-                        bool added = RegisterItem(item.Identifier, item);
+                        bool added = RegisterItem(id, item);
                         if (!added)
                         {
-                            Debug.LogWarning($"Duplicate item id '{item.Identifier}' detected in prefab '{prefab.name}', skipping.");
+                            Debug.LogWarning($"Duplicate item ResourcePath '{id}' detected in prefab '{prefab.name}', skipping.");
                         }
                     }
                     catch (Exception ex)

@@ -5,6 +5,7 @@ using AwesomeProjectionCoreUtils.Extensions;
 using GameFramework;
 using GameFramework.Events;
 using GameFramework.Identification;
+using UnityEngine;
 
 namespace UnityGameFrameworkImplementations.Core
 {
@@ -18,6 +19,20 @@ namespace UnityGameFrameworkImplementations.Core
     /// </summary>
     public abstract class AbstractActor : NetEntity, IActor
     {
+        [HideInInspector]
+        [SerializeField] private string resourcePath = "";
+
+        /// <summary>
+        /// The path to load this actor's prefab from a Resources folder (without extension),
+        /// allowing it to be instantiated at runtime via Resources.Load.
+        /// Automatically populated by <see cref="ActorPostprocessor"/> when the prefab is in a Resources folder.
+        /// </summary>
+        public string ResourcePath
+        {
+            get => resourcePath;
+            set => resourcePath = value;
+        }
+
         public IActor? Owner => _owner;
         
         public abstract string UUID { get; }
