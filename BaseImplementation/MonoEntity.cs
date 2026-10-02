@@ -14,7 +14,12 @@ namespace UnityGameFrameworkImplementations.Core
     /// </summary>
     public class MonoEntity : MonoBehaviour, IEntity, IEntityComponent
     {
-        public IEntity Entity { get; set; }
+        private IEntity? _entity;
+        public IEntity Entity
+        {
+            get => _entity ??= this;
+            set => _entity = value;
+        }
         
         public Transform Transform => transform;
         public IEventBus EventDispatcher => DeferredEventBus;

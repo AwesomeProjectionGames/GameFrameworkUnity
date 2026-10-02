@@ -1,7 +1,9 @@
 ﻿using System;
 using GameFramework;
+using GameFramework.Dependencies;
 using GameFramework.Inventory;
 using UnityEngine;
+using UnityGameFrameworkImplementations.BaseImplementation;
 
 namespace UnityGameFrameworkImplementations.Inventory
 {
@@ -34,7 +36,7 @@ namespace UnityGameFrameworkImplementations.Inventory
                 {
                     try
                     {
-                        var actor = item.Entity as IActor;
+                        var actor = item.EnsureEntity() as IActor;
                         string id = actor?.ResourcePath ?? string.Empty;
                         if (string.IsNullOrEmpty(id))
                         {

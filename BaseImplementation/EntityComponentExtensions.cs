@@ -32,6 +32,26 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
     public static class EntityComponentExtensions
     {
         /// <summary>
+        /// Ensures that the component's Entity is assigned, attempting self-resolution or parent lookup if needed.
+        /// Useful when accessing an entity component on prefabs or before Awake() has executed.
+        /// </summary>
+        /// <param name="component">The component needing its Entity.</param>
+        /// <returns>The resolved entity, or null if it cannot be found.</returns>
+        public static IEntity EnsureEntity(this IEntityComponent component)
+        {
+            if (component.Entity.IsAlive()) return component.Entity;
+
+            component.Entity = component switch
+            {
+                IEntity entitySelf => entitySelf,
+                Component c => c.GetComponentInParent<IEntity>(),
+                _ => null
+            };
+            
+            return component.Entity;
+        }
+        
+        /// <summary>
         /// Automatically populates fields and properties marked with [BindEntityComponent] 
         /// by resolving them against the component's Entity.
         /// Like a lightweight Dependency Injection system for Entity Components.
@@ -47,13 +67,7 @@ namespace UnityGameFrameworkImplementations.BaseImplementation
             // 1. Ensure the Entity is assigned.
             // If called in Awake/OnEnable, the Entity might not be assigned by the parent MonoEntity yet.
             // We attempt to find it if it is missing.
-            if (component.Entity == null && component is MonoBehaviour mb)
-            {
-                Debug.LogWarning($"[InjectEntityDependencies] 'Entity' is null for '{component.GetType().Name}'. Attempting to find Entity in parent hierarchy.");
-                component.Entity = mb.GetComponentInParent<IEntity>();
-            }
-
-            if (component.Entity == null)
+            if (component.EnsureEntity() == null)
             {
                 Debug.LogWarning($"[InjectEntityDependencies] Could not inject dependencies for '{component.GetType().Name}' because 'Entity' is null.");
                 return;
