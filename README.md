@@ -9,6 +9,12 @@ A collection of systems that implement unified game interface from [Game Framewo
 - **Effects**: Provides controllers and components for managing objects effects (gameplay / attributes) tied to actors and gameplay events.
 - **Communications**: A package that provides common communication mechanisms for Unity Game Framework-based projects, including event buses and tools to facilitate inter-system communication and interfaces workflow in Unity.
 
+## State Serialization & Persistence
+`AbstractActor` implements `ISerializedObject` for state snapshots (`Serialize()` / `Deserialize()`) using MemoryPack:
+- **How it works**: Aggregates all sibling components implementing `ISerializedObject` into a `Dictionary<uint, byte[]>`.
+- **Composite Key**: Uses a 32-bit key combining a 28-bit TypeHash (`comp.GetType().FullName`) and a 4-bit InstanceIndex (`0..15`, up to 16 components of the same type).
+- **Ordering Limitation**: Multiple instances of the same component type are indexed by their hierarchy discovery order in `ComponentsContainer` (Unity depth-first traversal). Do not reorder child GameObjects of identical component types on an existing prefab across versions, as their index mapping could swap.
+
 ## Dependencies
 ```mermaid
 graph TD

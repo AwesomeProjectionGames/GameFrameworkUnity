@@ -8,11 +8,12 @@
         "GameFrameworkCommunications",
         "Mirror",
         "Unity.Netcode.Runtime",
-        "GameFrameworkInventory"
+        "GameFrameworkInventory",
+        "MemoryPack.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

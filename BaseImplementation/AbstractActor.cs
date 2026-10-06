@@ -1,10 +1,13 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
+using System.Collections.Generic;
 using AwesomeProjectionCoreUtils.Extensions;
 using GameFramework;
+using GameFramework.Dependencies;
 using GameFramework.Events;
 using GameFramework.Identification;
+using MemoryPack;
 using UnityEngine;
 
 namespace UnityGameFrameworkImplementations.Core
@@ -14,10 +17,11 @@ namespace UnityGameFrameworkImplementations.Core
     /// - Registers components in a container
     /// - Provides event bus and transform access
     /// - Handles owner changes and ownership events (providing abstract method to implement networking where needed)
+    /// - Handles full state snapshot capture and restoration via ISerializedObject and MemoryPack
     /// 
     /// No networking logic; just shared Actor functionality.
     /// </summary>
-    public abstract class AbstractActor : NetEntity, IActor
+    public abstract class AbstractActor : NetEntity, IActor, ISerializedObject
     {
         [HideInInspector]
         [SerializeField] private string resourcePath = "";
@@ -139,5 +143,81 @@ namespace UnityGameFrameworkImplementations.Core
             if (other == null) return false;
             return UUID == other.UUID;
         }
+
+        #region State Persistence (ISerializedObject via MemoryPack)
+        /// <summary>
+        /// Serializes the state of all sibling components implementing ISerializedObject into a MemoryPack-serialized payload.
+        /// Format: Dictionary&lt;uint, byte[]&gt; where the 32-bit key composites:
+        /// - Upper 28 bits: TypeHash (deterministic hash of comp.GetType().FullName)
+        /// - Lower 4 bits: InstanceIndex (0..15, supporting up to 16 components of the same type)
+        /// </summary>
+        public virtual byte[] Serialize()
+        {
+            var components = ComponentsContainer.GetComponents<ISerializedObject>();
+            var typeCounts = new Dictionary<uint, uint>();
+            var stateDict = new Dictionary<uint, byte[]>(components.Count);
+
+            for (int i = 0; i < components.Count; i++)
+            {
+                var comp = components[i];
+                if (ReferenceEquals(comp, this)) continue;
+
+                uint typeHash = comp.GetType().GetDeterministicTypeHash();
+                uint instanceIndex = 0;
+                if (typeCounts.TryGetValue(typeHash, out uint count))
+                {
+                    instanceIndex = count;
+                    typeCounts[typeHash] = count + 1;
+                }
+                else
+                {
+                    typeCounts[typeHash] = 1;
+                }
+
+                uint compositeKey = (typeHash << 4) | (instanceIndex & 0x0F);
+                stateDict[compositeKey] = comp.Serialize();
+            }
+
+            return MemoryPackSerializer.Serialize(stateDict);
+        }
+
+        /// <summary>
+        /// Deserializes and restores state to matching ISerializedObject components from a MemoryPack-serialized payload.
+        /// Uses the same composite key (TypeHash 28-bit + InstanceIndex 4-bit) to support multiple components of the same type.
+        /// </summary>
+        public virtual void Deserialize(byte[] serializedData)
+        {
+            if (serializedData == null || serializedData.Length == 0) return;
+            var stateDict = MemoryPackSerializer.Deserialize<Dictionary<uint, byte[]>>(serializedData);
+            if (stateDict == null) return;
+
+            var components = ComponentsContainer.GetComponents<ISerializedObject>();
+            var typeCounts = new Dictionary<uint, uint>();
+
+            for (int i = 0; i < components.Count; i++)
+            {
+                var comp = components[i];
+                if (ReferenceEquals(comp, this)) continue;
+
+                uint typeHash = comp.GetType().GetDeterministicTypeHash();
+                uint instanceIndex = 0;
+                if (typeCounts.TryGetValue(typeHash, out uint count))
+                {
+                    instanceIndex = count;
+                    typeCounts[typeHash] = count + 1;
+                }
+                else
+                {
+                    typeCounts[typeHash] = 1;
+                }
+
+                uint compositeKey = (typeHash << 4) | (instanceIndex & 0x0F);
+                if (stateDict.TryGetValue(compositeKey, out byte[] componentBytes))
+                {
+                    comp.Deserialize(componentBytes);
+                }
+            }
+        }
+        #endregion
     }
 }
