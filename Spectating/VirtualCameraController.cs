@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System.Collections;
 using AwesomeProjectionCoreUtils.Extensions;
@@ -78,10 +78,26 @@ namespace GameFramework.Spectating
             _masterCamera.CopyFrom(CurrentCamera);
         }
 
+        protected virtual void OnDestroy()
+        {
+            if (CurrentCamera is VirtualCamera virtualCam)
+            {
+                virtualCam.ClearController(this);
+            }
+        }
+
         IEnumerator TransitionCoroutine(ICamera? fromCamera, ICamera cameraTarget, CameraTransitionSettings transitionSettings)
         {
             _isTransitioning = true;
+            if (CurrentCamera is VirtualCamera previousVirtual && !ReferenceEquals(previousVirtual, cameraTarget))
+            {
+                previousVirtual.ClearController(this);
+            }
             CurrentCamera = cameraTarget;
+            if (cameraTarget is VirtualCamera nextVirtual)
+            {
+                nextVirtual.SetController(this);
+            }
             
             float transitionDuration = transitionSettings.transitionDuration;
             
